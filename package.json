@@ -1,5 +1,5 @@
 {
-  "name": "proyectoUno",
+  "name": "LaChampa",
   "version": "0.0.0",
   "private": true,
   "scripts": {
@@ -12,6 +12,7 @@
     "express": "~4.12.4",
     "hbs": "~2.9.0",
     "less-middleware": "1.0.x",
+    "mongodb": "^2.0.39",
     "morgan": "~1.5.3",
     "serve-favicon": "~2.2.1"
   }
