@@ -1,0 +1,13 @@
+{
+  "uploadOnSave": true,
+  "hostname": "192.168.27.142",
+  "port": "22",
+  "target": "/root/LaChampa/LaChampa",
+  "ignore": [
+    ".git/**",
+    "node_modules/**"
+  ],
+  "username": "root",
+  "password": "seminario",
+  "transport": "scp"
+}
