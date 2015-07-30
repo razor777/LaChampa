@@ -1,9 +1,10 @@
 $(function() {
+
+
 	// generate unique user id
 	var userId = Math.random().toString(16).substring(2,15);
 	var map;
 
-	var info = $("#infobox");
 	var doc = $(document);
 
 	// custom marker's icon styles
@@ -33,6 +34,23 @@ $(function() {
 		$(".map").text("Your browser is out of fashion, there\'s no geolocation!");
 	}
 
+  $.ajax("mapa/mapa",
+          {
+              "method":"GET",
+              "data":{},
+              "dataType":"json",
+              "success":function(jsonDoc,status,jqXHR){
+                  console.log(jsonDoc);
+                  console.log("success");
+
+              },
+              "error":function(jqXHR,status, errorMsg){
+                  console.log(errorMsg);
+                  console.log("error");
+              }
+          }
+  );//ajax
+
 	function positionSuccess(position) {
 		var lat = position.coords.latitude;
 		var lng = position.coords.longitude;
@@ -44,47 +62,23 @@ $(function() {
 		});
 
 		// load leaflet map
-		//		map = L.map("map");
-		map = L.map("map").setView([lat, lng], 17);
+		map = L.map("map").setView([lat, lng], 16);
 
 		// leaflet API key tiler
 		L.tileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 			maxZoom: 18,
 			attribution: "",
 			detectRetina: true }).addTo(map);
-
-		// set map bounds
-		//map.fitWorld();
-		//map.location({setView: true, maxZoom: 10});
 		userMarker.addTo(map);
-		userMarker.bindPopup("You are there! Your ID is " + userId + "").openPopup();
+		userMarker.bindPopup("Usted esta aqui").openPopup();
 
-		// send coords on when user is active
-		doc.on("mousemove", function() {
-			active = true;
-
-			sentData = {
-				id: userId,
-				active: active,
-				coords: [{
-					lat: lat,
-					lng: lng,
-					acr: acr
-				}]
-			}
-		});
 	}
 
-	doc.bind("mouseup mouseleave", function() {
-		active = false;
-	});
-
-	// showing markers for connections
-	function setMarker(data) {
+  function setMarker(data) {
+    console.log("Hola");
 		for (i = 0; i < data.coords.length; i++) {
 			var marker = L.marker([data.coords[i].lat, data.coords[i].lng], { icon: yellowIcon }).addTo(map);
-			marker.bindPopup("One more external user is here!");
-			markers[data.id] = marker;
+			marker.bindPopup("Restaurantes");
 		}
 	}
 
@@ -101,14 +95,4 @@ $(function() {
 	function showError(msg) {
 		info.addClass("error").text(msg);
 	}
-
-	// delete inactive users every 15 sec
-	setInterval(function() {
-		for (ident in connects){
-			if ($.now() - connects[ident].updated > 15000) {
-				delete connects[ident];
-				map.removeLayer(markers[ident]);
-			}
-        }
-    }, 15000);
 });
