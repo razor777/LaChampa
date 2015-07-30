@@ -17,7 +17,7 @@ function mapa(db){
           if(err){
               res.status(500).json({"error":err});
           }else{
-              res.status(200).json({"libros":vRestaurantes});
+              res.status(200).json({"restaurantes":vRestaurantes});
           }
       }); // find toarray
     });

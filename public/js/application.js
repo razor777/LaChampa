@@ -21,11 +21,7 @@ $(function() {
 	var redIcon = new tinyIcon({ iconUrl: "../assets/marker-red.png" });
 	var yellowIcon = new tinyIcon({ iconUrl: "../assets/marker-yellow.png" });
 
-	var sentData = {}
-
-	var connects = {};
 	var markers = {};
-	var active = false;
 
 	// check whether browser supports geolocation api
 	if (navigator.geolocation) {
@@ -42,6 +38,7 @@ $(function() {
               "success":function(jsonDoc,status,jqXHR){
                   console.log(jsonDoc);
                   console.log("success");
+                  markers=jsonDoc;
 
               },
               "error":function(jqXHR,status, errorMsg){
@@ -55,7 +52,8 @@ $(function() {
 		var lat = position.coords.latitude;
 		var lng = position.coords.longitude;
 		var acr = position.coords.accuracy;
-
+    console.log("Hola");
+    console.log([lat, lng]);
 		// mark user's position
 		var userMarker = L.marker([lat, lng], {
 			icon: redIcon
@@ -71,14 +69,14 @@ $(function() {
 			detectRetina: true }).addTo(map);
 		userMarker.addTo(map);
 		userMarker.bindPopup("Usted esta aqui").openPopup();
-
+    setMarker(markers);
 	}
 
   function setMarker(data) {
-    console.log("Hola");
-		for (i = 0; i < data.coords.length; i++) {
-			var marker = L.marker([data.coords[i].lat, data.coords[i].lng], { icon: yellowIcon }).addTo(map);
-			marker.bindPopup("Restaurantes");
+    for (i = 0; i < data.restaurantes.length; i++) {
+      var marker = L.marker([data.restaurantes[i].geometry.coordinates[0],
+        data.restaurantes[i].geometry.coordinates[1]], { icon: yellowIcon }).addTo(map);
+      marker.bindPopup(data.restaurantes[i].popupContent);
 		}
 	}
 
