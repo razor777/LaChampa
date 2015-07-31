@@ -33,6 +33,75 @@ var geojsonDoc = {
 
 db.restaurantes.insert(geojsonDoc);
 
+var geojsonDoc = {
+    "docnum":3,
+    "type": "Feature",
+    "properties": {
+        "nombre": "cafeteria continua al gimnasio universitario",
+        "amenity": "cafeteria",
+        "popupContent": "Variedad de comidas",
+	      "tipoComida":"Variada"
+    },
+    "geometry": {
+        "type": "Point",
+        "coordinates": [14.054756, -87.249377]
+    }
+};
+
+db.restaurantes.insert(geojsonDoc);
+
+var geojsonDoc = {
+    "docnum":4,
+    "type": "Feature",
+    "properties": {
+        "nombre": "Baleadas express",
+        "amenity": "local",
+        "popupContent": "especialidad en baleadas y comidas tipicas",
+	      "tipoComida":"Tipica"
+    },
+    "geometry": {
+        "type": "Point",
+        "coordinates": [14.062562, -87.222721]
+    }
+};
+
+db.restaurantes.insert(geojsonDoc);
+
+var geojsonDoc = {
+    "docnum":5,
+    "type": "Feature",
+    "properties": {
+        "nombre": "Asados el Gordo",
+        "amenity": "local",
+        "popupContent": "especialidad chuletas de cerdo y carne asada",
+	      "tipoComida":"Carne Asada"
+    },
+    "geometry": {
+        "type": "Point",
+        "coordinates": [14.064706, -87.218913]
+    }
+};
+
+db.restaurantes.insert(geojsonDoc);
+
+var geojsonDoc = {
+    "docnum":6,
+    "type": "Feature",
+    "properties": {
+        "nombre": "terraza y restaurante bella vista",
+        "amenity": "local",
+        "popupContent": "terraza y restaurante bella vista </br> Especialidad en comidas Gourmed",
+	      "tipoComida":"bufete"
+    },
+    "geometry": {
+        "type": "Point",
+        "coordinates": [14.061223, -87.239148]
+    }
+};
+
+db.restaurantes.insert(geojsonDoc);
+
+
 var usuarios = {
  "usuario":"",
  "correo":"",
