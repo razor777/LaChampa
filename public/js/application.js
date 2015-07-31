@@ -76,7 +76,7 @@ $(function() {
     for (i = 0; i < data.restaurantes.length; i++) {
       var marker = L.marker([data.restaurantes[i].geometry.coordinates[0],
         data.restaurantes[i].geometry.coordinates[1]], { icon: yellowIcon }).addTo(map);
-      marker.bindPopup(data.restaurantes[i].popupContent);
+      marker.bindPopup(data.restaurantes[i].properties.popupContent);
 		}
 	}
 
