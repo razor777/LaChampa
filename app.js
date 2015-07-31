@@ -32,8 +32,15 @@ function returnApp(db){
     // la uri del módulo y debe especificar
     // en el módulo la exportación con
     // module.exports = <<funcion>>
+
     //var api = require('./routes/api.js')(db);
     //app.use('/api/v0', api);
+
+    var mapa = require('./routes/mapa.js')(db);
+    app.use('/mapa', mapa);
+    //var mapa2 = require('./routes/mapa2.js')(db);
+    //app.use('/mapa2', mapa2);
+
     // http://localhost:3000/api/v0/obtenerLibros
 
     // catch 404 and forward to error handler

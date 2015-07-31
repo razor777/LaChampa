@@ -40,6 +40,9 @@ MongoClient.connect(uri, function(err, db){
     /**
      * Listen on provided port, on all network interfaces.
      */
+     //lo agregue yo
+    var io = require('socket.io').listen(server);
+    //yoyo
 
     server.listen(port);
     server.on('error', onError);
