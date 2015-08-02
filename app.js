@@ -5,7 +5,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
-var routes = require('./routes/index');
+
 var users = require('./routes/users');
 
 function returnApp(db){
@@ -23,7 +23,7 @@ function returnApp(db){
     app.use(cookieParser());
     app.use(require('less-middleware')(path.join(__dirname, 'public')));
     app.use(express.static(path.join(__dirname, 'public')));
-
+    var routes = require('./routes/index')(db);
     app.use('/', routes);
     app.use('/users', users);
 
