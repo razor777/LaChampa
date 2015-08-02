@@ -22,6 +22,42 @@ function mapa(db){
       }); // find toarray
     });
 
+    mapaRouter.get("/CatCarneAsada",function(req,res){
+      var query = {"properties.tipoComida":{$eq:"Carnes"}};
+      var proyeccion = {};
+      restaurantes.find(query).toArray(function(err, vRestaurantes){
+          if(err){
+              res.status(500).json({"error":err});
+          }else{
+              res.status(200).json({"restaurantes":vRestaurantes});
+          }
+      }); // find toarray
+    });
+
+    mapaRouter.get("/CatMariscos",function(req,res){
+      var query = {"properties.tipoComida":{$eq:"Pescado"}};
+      var proyeccion = {};
+      restaurantes.find(query).toArray(function(err, vRestaurantes){
+          if(err){
+              res.status(500).json({"error":err});
+          }else{
+              res.status(200).json({"restaurantes":vRestaurantes});
+          }
+      }); // find toarray
+    });
+
+    mapaRouter.get("/CatBaleadas",function(req,res){
+      var query = {"properties.tipoComida":{$eq:"Baleadas"}};
+      var proyeccion = {};
+      restaurantes.find(query).toArray(function(err, vRestaurantes){
+          if(err){
+              res.status(500).json({"error":err});
+          }else{
+              res.status(200).json({"restaurantes":vRestaurantes});
+          }
+      }); // find toarray
+    });
+
     return mapaRouter;
 }
 

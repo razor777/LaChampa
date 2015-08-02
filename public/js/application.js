@@ -1,7 +1,14 @@
 $(function() {
+	// variables para los filtros
+	var carneAsada = new L.LayerGroup();
+	var mariscos = new L.LayerGroup();
 
-
-	// generate unique user id
+	var baseLayers={};
+	var overlays = {
+			"Mariscos": mariscos,
+			"Carne Asada": carneAsada
+		};
+ //---------------------------------------
 	var userId = Math.random().toString(16).substring(2,15);
 	var map;
 
@@ -36,14 +43,12 @@ $(function() {
               "data":{},
               "dataType":"json",
               "success":function(jsonDoc,status,jqXHR){
-                  console.log(jsonDoc);
-                  console.log("success");
-                  markers=jsonDoc;
-
+                console.log("success");
+								console.log(jsonDoc);
               },
               "error":function(jqXHR,status, errorMsg){
-                  console.log(errorMsg);
-                  console.log("error");
+								console.log("error");
+                console.log(errorMsg);
               }
           }
   );//ajax
@@ -52,15 +57,13 @@ $(function() {
 		var lat = position.coords.latitude;
 		var lng = position.coords.longitude;
 		var acr = position.coords.accuracy;
-    console.log("Hola");
-    console.log([lat, lng]);
 		// mark user's position
 		var userMarker = L.marker([lat, lng], {
 			icon: redIcon
 		});
 
 		// load leaflet map
-		map = L.map("map").setView([lat, lng], 16);
+		map = L.map("map",{layers: [carnes, pescado]}).setView([lat, lng], 16);
 
 		// leaflet API key tiler
 		L.tileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -69,15 +72,62 @@ $(function() {
 			detectRetina: true }).addTo(map);
 		userMarker.addTo(map);
 		userMarker.bindPopup("Usted esta aqui").openPopup();
-    setMarker(markers);
+    setMarker();
 	}
 
-  function setMarker(data) {
-    for (i = 0; i < data.restaurantes.length; i++) {
-      var marker = L.marker([data.restaurantes[i].geometry.coordinates[0],
-        data.restaurantes[i].geometry.coordinates[1]], { icon: yellowIcon }).addTo(map);
-      marker.bindPopup(data.restaurantes[i].properties.popupContent);
-		}
+  function setMarker() {
+		setCatMariscos();
+		setCatCarneAsada();
+		L.control.layers(baseLayers,overlays).addTo(map);
+	}
+
+	function setCatMariscos(){
+		$.ajax("mapa/setCatMariscos",
+	          {
+	              "method":"GET",
+	              "data":{},
+	              "dataType":"json",
+	              "success":function(jsonDoc,status,jqXHR){
+										console.log("setCatCarneAsada");
+	                  console.log(jsonDoc);
+										for (i = 0; i < jsonDoc.restaurantes.length; i++) {
+											var marker = L.marker([jsonDoc.restaurantes[i].geometry.coordinates[0],
+								        jsonDoc.restaurantes[i].geometry.coordinates[1]], { icon: yellowIcon }).addTo(mariscos);
+								      marker.bindPopup(jsonDoc.restaurantes[i].properties.popupContent);
+										}
+
+	              },
+	              "error":function(jqXHR,status, errorMsg){
+	                  console.log(errorMsg);
+	                  console.log("error");
+	              }
+	          }
+	  );//ajax
+	}
+
+	function setCatCarneAsada(){
+		$.ajax("mapa/CatCarneAsada",
+	          {
+	              "method":"GET",
+	              "data":{},
+	              "dataType":"json",
+	              "success":function(jsonDoc,status,jqXHR){
+										console.log("setCatCarneAsada");
+	                  console.log(jsonDoc);
+										for (i = 0; i < jsonDoc.restaurantes.length; i++) {
+											var marker = L.marker([jsonDoc.restaurantes[i].geometry.coordinates[0],
+								        jsonDoc.restaurantes[i].geometry.coordinates[1]], { icon: yellowIcon }).addTo(carneAsada);
+								      marker.bindPopup(jsonDoc.restaurantes[i].properties.popupContent);
+										}
+
+	              },
+	              "error":function(jqXHR,status, errorMsg){
+	                  console.log(errorMsg);
+	                  console.log("error");
+	              }
+	          }
+	  );//ajax
+
 	}
 
 	// handle geolocation api errors
