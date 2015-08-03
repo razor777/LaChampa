@@ -1,13 +1,26 @@
 $(function() {
+	// variables para los filtros
+	var carneAsada = new L.LayerGroup();
+	var mariscos = new L.LayerGroup();
+	var baleada = new L.LayerGroup();
+	var foodcourt = new L.LayerGroup();
+	var vLayers = [carneAsada,mariscos,baleada,foodcourt];
 
-
-	// generate unique user id
-	var userId = Math.random().toString(16).substring(2,15);
+	var baseLayers={};
+	var overlays = {
+			"Mariscos": mariscos,
+			"Carnes Asadas": carneAsada,
+			"Baleadas": baleada,
+			"FoodCourts": foodcourt
+		};
+		//tambien uso la funcion setMarker y lo que contiene
+ //---------------------------------------
+ //variables para el panel
+ var vDocnum = [];
+ //---------------
 	var map;
 
-	var doc = $(document);
-
-	// custom marker's icon styles
+	// estilos de iconos de marcadores personalizados
 	var tinyIcon = L.Icon.extend({
 		options: {
 			shadowUrl: "../assets/marker-shadow.png",
@@ -21,8 +34,6 @@ $(function() {
 	var redIcon = new tinyIcon({ iconUrl: "../assets/marker-red.png" });
 	var yellowIcon = new tinyIcon({ iconUrl: "../assets/marker-yellow.png" });
 
-	var markers = {};
-
 	// check whether browser supports geolocation api
 	if (navigator.geolocation) {
 		navigator.geolocation.getCurrentPosition(positionSuccess, positionError, { enableHighAccuracy: true });
@@ -30,54 +41,201 @@ $(function() {
 		$(".map").text("Your browser is out of fashion, there\'s no geolocation!");
 	}
 
-  $.ajax("mapa/mapa",
-          {
-              "method":"GET",
-              "data":{},
-              "dataType":"json",
-              "success":function(jsonDoc,status,jqXHR){
-                  console.log(jsonDoc);
-                  console.log("success");
-                  markers=jsonDoc;
-
-              },
-              "error":function(jqXHR,status, errorMsg){
-                  console.log(errorMsg);
-                  console.log("error");
-              }
-          }
-  );//ajax
-
 	function positionSuccess(position) {
 		var lat = position.coords.latitude;
 		var lng = position.coords.longitude;
 		var acr = position.coords.accuracy;
-    console.log("Hola");
-    console.log([lat, lng]);
 		// mark user's position
 		var userMarker = L.marker([lat, lng], {
 			icon: redIcon
 		});
 
 		// load leaflet map
-		map = L.map("map").setView([lat, lng], 16);
+		//los layers vendrian siendo nuestros checkbox en los filtros
+		map = L.map("map",{layers: vLayers}).setView([lat, lng], 16);
 
-		// leaflet API key tiler
+		// leaflet API key tiler es decir de donde se carga el mapa
 		L.tileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 			maxZoom: 18,
 			attribution: "",
 			detectRetina: true }).addTo(map);
+			//se agrega la ubicacion actual del usuario
 		userMarker.addTo(map);
+		/*
+		userMarker.on('click', function(e) {
+    	alert(e.latlng);
+			console.log("Hola soy click");
+		});*/
 		userMarker.bindPopup("Usted esta aqui").openPopup();
-    setMarker(markers);
+		//funcion que pone los restaurantes en el mapa por categorias
+    setMarker();
 	}
 
-  function setMarker(data) {
-    for (i = 0; i < data.restaurantes.length; i++) {
-      var marker = L.marker([data.restaurantes[i].geometry.coordinates[0],
-        data.restaurantes[i].geometry.coordinates[1]], { icon: yellowIcon }).addTo(map);
-      marker.bindPopup(data.restaurantes[i].properties.popupContent);
-		}
+  function setMarker() {
+		setCatMariscos();
+		setCatCarneAsada();
+		setCatBaleadas();
+		setCatFoodCourts();
+		//aqui agregamos la caja para los filtros
+		L.control.layers(baseLayers,overlays).addTo(map);
+	}
+
+	function setPanelNoFoodCourt(number){
+		console.log(vDocnum[number]);
+		$.ajax("panel/"+vDocnum[number],
+	          {
+	              "method":"GET",
+	              "data":{},
+	              "dataType":"json",
+	              "success":function(jsonDoc,status,jqXHR){
+										$( "#nombreLocal" ).text(jsonDoc.restaurantes[0].properties.nombre);
+										$( "#descripcion" ).text(jsonDoc.restaurantes[0].properties.popupContent);
+										$( "#puntos" ).text(jsonDoc.restaurantes[0].properties.rating);
+										$("#preciosLocales li").remove();
+
+										for (i = 0; i < jsonDoc.restaurantes[0].properties.menu.length; i++) {
+											$("#preciosLocales").append("<li class='ui-li' data-theme='c'><span>"
+											+jsonDoc.restaurantes[0].properties.menu[i].nombreComida+" "
+											+jsonDoc.restaurantes[0].properties.menu[i].precio
+											 +"</span></li>");
+										}
+	              },
+	              "error":function(jqXHR,status, errorMsg){
+	                  console.log(errorMsg);
+	                  console.log("error");
+	              }
+	          }
+	  );//ajax
+		$("#like").on('click', function(e){
+			console.log("soy like");
+		});//$("#like").on('click'
+	}
+
+	function setCatMariscos(){
+		$.ajax("mapa/CatMariscos",
+	          {
+	              "method":"GET",
+	              "data":{},
+	              "dataType":"json",
+	              "success":function(jsonDoc,status,jqXHR){
+										for (i = 0; i < jsonDoc.restaurantes.length; i++) {
+											var marker = L.marker([jsonDoc.restaurantes[i].geometry.coordinates[0],
+								        jsonDoc.restaurantes[i].geometry.coordinates[1]], { icon: yellowIcon }).addTo(mariscos);
+								      marker.bindPopup(jsonDoc.restaurantes[i].properties.popupContent);
+
+											var cadena = jsonDoc.restaurantes[i].geometry.coordinates[0]+"_"+jsonDoc.restaurantes[i].geometry.coordinates[1];
+											cadena=cadena.replace(/\-|\.|\_/gi,"");
+											vDocnum[cadena]=jsonDoc.restaurantes[i].docnum;
+											marker.on('click', function(e) {
+												$( "#mypanel" ).panel( "open" , {} );
+
+												var cadena = e.latlng.lat+"_"+e.latlng.lng;
+												cadena=cadena.replace(/\-|\.|\_/gi,"");
+												setPanelNoFoodCourt(cadena);
+
+											});//marker.on click
+										}
+
+	              },
+	              "error":function(jqXHR,status, errorMsg){
+	                  console.log(errorMsg);
+	                  console.log("error");
+	              }
+	          }
+	  );//ajax
+	}
+
+	function setCatCarneAsada(){
+		$.ajax("mapa/CatCarneAsada",
+	          {
+	              "method":"GET",
+	              "data":{},
+	              "dataType":"json",
+	              "success":function(jsonDoc,status,jqXHR){
+										for (i = 0; i < jsonDoc.restaurantes.length; i++) {
+											var marker = L.marker([jsonDoc.restaurantes[i].geometry.coordinates[0],
+								        jsonDoc.restaurantes[i].geometry.coordinates[1]], { icon: yellowIcon }).addTo(carneAsada);
+								      marker.bindPopup(jsonDoc.restaurantes[i].properties.popupContent);
+
+											var cadena = jsonDoc.restaurantes[i].geometry.coordinates[0]+"_"+jsonDoc.restaurantes[i].geometry.coordinates[1];
+											cadena=cadena.replace(/\-|\.|\_/gi,"");
+											vDocnum[cadena]=jsonDoc.restaurantes[i].docnum;
+
+											marker.on('click', function(e) {
+												$( "#mypanel" ).panel( "open" , {} );
+
+												var cadena = e.latlng.lat+"_"+e.latlng.lng;
+												cadena=cadena.replace(/\-|\.|\_/gi,"");
+												setPanelNoFoodCourt(cadena);
+
+											});//marker.on click
+										}
+
+	              },
+	              "error":function(jqXHR,status, errorMsg){
+	                  console.log(errorMsg);
+	                  console.log("error");
+	              }
+	          }
+	  );//ajax
+
+	}
+
+	function setCatBaleadas() {
+		$.ajax("mapa/CatBaleadas",
+	          {
+	              "method":"GET",
+	              "data":{},
+	              "dataType":"json",
+	              "success":function(jsonDoc,status,jqXHR){
+										for (i = 0; i < jsonDoc.restaurantes.length; i++) {
+											var marker = L.marker([jsonDoc.restaurantes[i].geometry.coordinates[0],
+								        jsonDoc.restaurantes[i].geometry.coordinates[1]], { icon: yellowIcon }).addTo(carneAsada);
+								      marker.bindPopup(jsonDoc.restaurantes[i].properties.popupContent);
+
+											var cadena = jsonDoc.restaurantes[i].geometry.coordinates[0]+"_"+jsonDoc.restaurantes[i].geometry.coordinates[1];
+											cadena=cadena.replace(/\-|\.|\_/gi,"");
+											vDocnum[cadena]=jsonDoc.restaurantes[i].docnum;
+
+											marker.on('click', function(e) {
+												$( "#mypanel" ).panel( "open" , {} );
+
+												var cadena = e.latlng.lat+"_"+e.latlng.lng;
+												cadena=cadena.replace(/\-|\.|\_/gi,"");
+												setPanelNoFoodCourt(cadena);
+
+											});//marker.on click
+										}
+
+	              },
+	              "error":function(jqXHR,status, errorMsg){
+	                  console.log(errorMsg);
+	                  console.log("error");
+	              }
+	          }
+	  );//ajax
+	}
+
+	function setCatFoodCourts() {
+		$.ajax("mapa/CatFoodCourt",
+	          {
+	              "method":"GET",
+	              "data":{},
+	              "dataType":"json",
+	              "success":function(jsonDoc,status,jqXHR){
+										for (i = 0; i < jsonDoc.restaurantes.length; i++) {
+											var marker = L.marker([jsonDoc.restaurantes[i].geometry.coordinates[0],
+								        jsonDoc.restaurantes[i].geometry.coordinates[1]], { icon: yellowIcon }).addTo(carneAsada);
+								      marker.bindPopup(jsonDoc.restaurantes[i].properties.popupContent);
+										}
+
+	              },
+	              "error":function(jqXHR,status, errorMsg){
+	                  console.log(errorMsg);
+	                  console.log("error");
+	              }
+	          }
+	  );//ajax
 	}
 
 	// handle geolocation api errors

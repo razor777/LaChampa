@@ -5,8 +5,8 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
-var routes = require('./routes/index');
-var users = require('./routes/users');
+
+
 
 
 function returnApp(db){
@@ -24,9 +24,13 @@ function returnApp(db){
     app.use(cookieParser());
     app.use(require('less-middleware')(path.join(__dirname, 'public')));
     app.use(express.static(path.join(__dirname, 'public')));
-
+    var routes = require('./routes/index')(db);
     app.use('/', routes);
+    var users = require('./routes/users')(db);
     app.use('/users', users);
+    var home = require('./routes/home')(db);
+    app.use('/home', home);
+
 
     //para llamar a los modulos se usa la funcion require
     // la uri del módulo y debe especificar
@@ -38,8 +42,9 @@ function returnApp(db){
 
     var mapa = require('./routes/mapa.js')(db);
     app.use('/mapa', mapa);
-    //var mapa2 = require('./routes/mapa2.js')(db);
-    //app.use('/mapa2', mapa2);
+
+    var panel = require('./routes/panel.js')(db);
+    app.use('/panel', panel);
 
     // http://localhost:3000/api/v0/obtenerLibros
 
