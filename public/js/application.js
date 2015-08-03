@@ -2,19 +2,21 @@ $(function() {
 	// variables para los filtros
 	var carneAsada = new L.LayerGroup();
 	var mariscos = new L.LayerGroup();
+	var baleada = new L.LayerGroup();
+	var foodcourt = new L.LayerGroup();
+	var vLayers = [carneAsada,mariscos,baleada,foodcourt];
 
 	var baseLayers={};
 	var overlays = {
 			"Mariscos": mariscos,
-			"Carne Asada": carneAsada
+			"Carnes Asadas": carneAsada,
+			"Baleadas": baleada,
+			"FoodCourts": foodcourt
 		};
  //---------------------------------------
-	var userId = Math.random().toString(16).substring(2,15);
 	var map;
 
-	var doc = $(document);
-
-	// custom marker's icon styles
+	// estilos de iconos de marcadores personalizados
 	var tinyIcon = L.Icon.extend({
 		options: {
 			shadowUrl: "../assets/marker-shadow.png",
@@ -28,30 +30,12 @@ $(function() {
 	var redIcon = new tinyIcon({ iconUrl: "../assets/marker-red.png" });
 	var yellowIcon = new tinyIcon({ iconUrl: "../assets/marker-yellow.png" });
 
-	var markers = {};
-
 	// check whether browser supports geolocation api
 	if (navigator.geolocation) {
 		navigator.geolocation.getCurrentPosition(positionSuccess, positionError, { enableHighAccuracy: true });
 	} else {
 		$(".map").text("Your browser is out of fashion, there\'s no geolocation!");
 	}
-
-  $.ajax("mapa/mapa",
-          {
-              "method":"GET",
-              "data":{},
-              "dataType":"json",
-              "success":function(jsonDoc,status,jqXHR){
-                console.log("success");
-								console.log(jsonDoc);
-              },
-              "error":function(jqXHR,status, errorMsg){
-								console.log("error");
-                console.log(errorMsg);
-              }
-          }
-  );//ajax
 
 	function positionSuccess(position) {
 		var lat = position.coords.latitude;
@@ -63,33 +47,37 @@ $(function() {
 		});
 
 		// load leaflet map
-		map = L.map("map",{layers: [carnes, pescado]}).setView([lat, lng], 16);
+		//los layers vendrian siendo nuestros checkbox en los filtros
+		map = L.map("map",{layers: vLayers}).setView([lat, lng], 16);
 
-		// leaflet API key tiler
+		// leaflet API key tiler es decir de donde se carga el mapa
 		L.tileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 			maxZoom: 18,
 			attribution: "",
 			detectRetina: true }).addTo(map);
+			//se agrega la ubicacion actual del usuario
 		userMarker.addTo(map);
 		userMarker.bindPopup("Usted esta aqui").openPopup();
+		//funcion que pone los restaurantes en el mapa por categorias
     setMarker();
 	}
 
   function setMarker() {
 		setCatMariscos();
 		setCatCarneAsada();
+		setCatBaleadas();
+		setCatFoodCourts();
+		//aqui agregamos la caja para los filtros
 		L.control.layers(baseLayers,overlays).addTo(map);
 	}
 
 	function setCatMariscos(){
-		$.ajax("mapa/setCatMariscos",
+		$.ajax("mapa/CatMariscos",
 	          {
 	              "method":"GET",
 	              "data":{},
 	              "dataType":"json",
 	              "success":function(jsonDoc,status,jqXHR){
-										console.log("setCatCarneAsada");
-	                  console.log(jsonDoc);
 										for (i = 0; i < jsonDoc.restaurantes.length; i++) {
 											var marker = L.marker([jsonDoc.restaurantes[i].geometry.coordinates[0],
 								        jsonDoc.restaurantes[i].geometry.coordinates[1]], { icon: yellowIcon }).addTo(mariscos);
@@ -112,8 +100,6 @@ $(function() {
 	              "data":{},
 	              "dataType":"json",
 	              "success":function(jsonDoc,status,jqXHR){
-										console.log("setCatCarneAsada");
-	                  console.log(jsonDoc);
 										for (i = 0; i < jsonDoc.restaurantes.length; i++) {
 											var marker = L.marker([jsonDoc.restaurantes[i].geometry.coordinates[0],
 								        jsonDoc.restaurantes[i].geometry.coordinates[1]], { icon: yellowIcon }).addTo(carneAsada);
@@ -128,6 +114,50 @@ $(function() {
 	          }
 	  );//ajax
 
+	}
+
+	function setCatBaleadas() {
+		$.ajax("mapa/CatBaleadas",
+	          {
+	              "method":"GET",
+	              "data":{},
+	              "dataType":"json",
+	              "success":function(jsonDoc,status,jqXHR){
+										for (i = 0; i < jsonDoc.restaurantes.length; i++) {
+											var marker = L.marker([jsonDoc.restaurantes[i].geometry.coordinates[0],
+								        jsonDoc.restaurantes[i].geometry.coordinates[1]], { icon: yellowIcon }).addTo(carneAsada);
+								      marker.bindPopup(jsonDoc.restaurantes[i].properties.popupContent);
+										}
+
+	              },
+	              "error":function(jqXHR,status, errorMsg){
+	                  console.log(errorMsg);
+	                  console.log("error");
+	              }
+	          }
+	  );//ajax
+	}
+
+	function setCatFoodCourts() {
+		$.ajax("mapa/CatFoodCourt",
+	          {
+	              "method":"GET",
+	              "data":{},
+	              "dataType":"json",
+	              "success":function(jsonDoc,status,jqXHR){
+										for (i = 0; i < jsonDoc.restaurantes.length; i++) {
+											var marker = L.marker([jsonDoc.restaurantes[i].geometry.coordinates[0],
+								        jsonDoc.restaurantes[i].geometry.coordinates[1]], { icon: yellowIcon }).addTo(carneAsada);
+								      marker.bindPopup(jsonDoc.restaurantes[i].properties.popupContent);
+										}
+
+	              },
+	              "error":function(jqXHR,status, errorMsg){
+	                  console.log(errorMsg);
+	                  console.log("error");
+	              }
+	          }
+	  );//ajax
 	}
 
 	// handle geolocation api errors

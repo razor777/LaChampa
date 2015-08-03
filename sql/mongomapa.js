@@ -1,36 +1,81 @@
+
 var geojsonDoc = {
-    "docnum":7,
+    "docnum":15,
     "type": "Feature",
     "properties": {
-        "nombre": "Carnes 1",
-        "amenity": "local",
-
-        "popupContent": "Carnes 1",
-	      "tipoComida":"Carnes",
-        "rating":"",
-        "menu":[{"nombreComida":"","precio":""}]
+        "nombre": "Cafeteria Vieja",
+        "amenity": "centroFoodcourt",
+        "lugarAsociado":0,
+        "popupContent": "",
+	      "tipoComida":"",
+        "rating":0,
+        "menu":[]
     },
     "geometry": {
         "type": "Point",
-        "coordinates": [14.126803, -87.218234]
+        "coordinates": [14.053740, -87.249063]
     }
 };
 db.restaurantes.insert(geojsonDoc);
 
 var geojsonDoc = {
-    "docnum":7,
+    "docnum":16,
     "type": "Feature",
     "properties": {
-        "nombre": "Carnes 1",
+        "nombre": "Las Campanas",
         "amenity": "foodcourt",
-        "localesAsociados":[1,5,5],
-        "popupContent": "Carnes 1",
-	      "tipoComida":"Carnes",
+        "lugarAsociado":15,
+        "popupContent": "Pizza al mejor precio",
+	      "tipoComida":["Pizza","Tacos"],
         "rating":"",
-        "menu":[{"nombreComida":"","precio":""}]
+        "menu":[{"nombreComida":"Pizza","precio":"25 lps."}]
     },
     "geometry": {
         "type": "Point",
-        "coordinates": [14.126803, -87.218234]
+        "coordinates": []
     }
 };
+db.restaurantes.insert(geojsonDoc);
+
+var geojsonDoc = {
+    "docnum":17,
+    "type": "Feature",
+    "properties": {
+        "nombre": "Expreso Americano",
+        "amenity": "foodcourt",
+        "lugarAsociado":15,
+        "popupContent": "Cafe delicioso con galletas",
+	      "tipoComida":["Cafe"],
+        "rating":"",
+        "menu":[{"nombreComida":"Capucchino","precio":"32 lps."},
+                {"nombreComida":"Late","precio":"33 lps."}]
+    },
+    "geometry": {
+        "type": "Point",
+        "coordinates": []
+    }
+};
+db.restaurantes.insert(geojsonDoc);
+var geojsonDoc = {
+    "docnum":18,
+    "type": "Feature",
+    "properties": {
+        "nombre": "Comida Tipica",
+        "amenity": "foodcourt",
+        "lugarAsociado":15,
+        "popupContent": "Disfrute comidas variadas",
+	      "tipoComida":["Hamburguesas","Pupusas","Tortas","Tacos"],
+        "rating":"",
+        "menu":[{"nombreComida":"Capucchino","precio":"32 lps."},
+                {"nombreComida":"Late","precio":"33 lps."}]
+    },
+    "geometry": {
+        "type": "Point",
+        "coordinates": []
+    }
+};
+db.restaurantes.insert(geojsonDoc);
+var query = {$and:[{"properties.lugarAsociado":{$eq:15}},{"properties.tipoComida":{$eq:"Tacos"}}]};
+var proy = {"_id":0,"properties":1,"geometry":1};
+db.restaurantes.find(query,proy).pretty();
+db.restaurantes.find({"properties.lugarAsociado":{$eq:15}}).pretty();

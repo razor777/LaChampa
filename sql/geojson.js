@@ -6,7 +6,7 @@ var geojsonDoc = {
         "nombre": "Carnes 1",
         "amenity": "local",
         "popupContent": "Carnes 1",
-	      "tipoComida":"Carnes"
+	      "tipoComida":"carneAsada"
     },
     "geometry": {
         "type": "Point",
@@ -21,7 +21,7 @@ var geojsonDoc = {
         "nombre": "Carnes 2",
         "amenity": "local",
         "popupContent": "Carnes 2",
-	      "tipoComida":"Carnes"
+	      "tipoComida":"carneAsada"
     },
     "geometry": {
         "type": "Point",
@@ -36,7 +36,7 @@ var geojsonDoc = {
         "nombre": "Pescado 1",
         "amenity": "local",
         "popupContent": "Pescado 1",
-	      "tipoComida":"Pescado"
+	      "tipoComida":"mariscos"
     },
     "geometry": {
         "type": "Point",
@@ -51,7 +51,7 @@ var geojsonDoc = {
         "nombre": "Pescado 2",
         "amenity": "local",
         "popupContent": "Pescado 2",
-	      "tipoComida":"Pescado"
+	      "tipoComida":"mariscos"
     },
     "geometry": {
         "type": "Point",
