@@ -33,6 +33,8 @@ function returnApp(db){
     // module.exports = <<funcion>>
     var mapa = require('./routes/mapa.js')(db);
     app.use('/mapa', mapa);
+    var panel = require('./routes/panel.js')(db);
+    app.use('/panel', panel);
     // http://localhost:3000/api/v0/obtenerLibros
 
     // catch 404 and forward to error handler

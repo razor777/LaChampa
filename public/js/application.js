@@ -13,7 +13,11 @@ $(function() {
 			"Baleadas": baleada,
 			"FoodCourts": foodcourt
 		};
+		//tambien uso la funcion setMarker y lo que contiene
  //---------------------------------------
+ //variables para el panel
+ var vDocnum = [];
+ //---------------
 	var map;
 
 	// estilos de iconos de marcadores personalizados
@@ -57,6 +61,11 @@ $(function() {
 			detectRetina: true }).addTo(map);
 			//se agrega la ubicacion actual del usuario
 		userMarker.addTo(map);
+		/*
+		userMarker.on('click', function(e) {
+    	alert(e.latlng);
+			console.log("Hola soy click");
+		});*/
 		userMarker.bindPopup("Usted esta aqui").openPopup();
 		//funcion que pone los restaurantes en el mapa por categorias
     setMarker();
@@ -71,6 +80,37 @@ $(function() {
 		L.control.layers(baseLayers,overlays).addTo(map);
 	}
 
+	function setPanelNoFoodCourt(number){
+		console.log(vDocnum[number]);
+		$.ajax("panel/"+vDocnum[number],
+	          {
+	              "method":"GET",
+	              "data":{},
+	              "dataType":"json",
+	              "success":function(jsonDoc,status,jqXHR){
+										$( "#nombreLocal" ).text(jsonDoc.restaurantes[0].properties.nombre);
+										$( "#descripcion" ).text(jsonDoc.restaurantes[0].properties.popupContent);
+										$( "#puntos" ).text(jsonDoc.restaurantes[0].properties.rating);
+										$("#preciosLocales li").remove();
+
+										for (i = 0; i < jsonDoc.restaurantes[0].properties.menu.length; i++) {
+											$("#preciosLocales").append("<li class='ui-li' data-theme='c'><span>"
+											+jsonDoc.restaurantes[0].properties.menu[i].nombreComida+" "
+											+jsonDoc.restaurantes[0].properties.menu[i].precio
+											 +"</span></li>");
+										}
+	              },
+	              "error":function(jqXHR,status, errorMsg){
+	                  console.log(errorMsg);
+	                  console.log("error");
+	              }
+	          }
+	  );//ajax
+		$("#like").on('click', function(e){
+			console.log("soy like");
+		});//$("#like").on('click'
+	}
+
 	function setCatMariscos(){
 		$.ajax("mapa/CatMariscos",
 	          {
@@ -82,6 +122,18 @@ $(function() {
 											var marker = L.marker([jsonDoc.restaurantes[i].geometry.coordinates[0],
 								        jsonDoc.restaurantes[i].geometry.coordinates[1]], { icon: yellowIcon }).addTo(mariscos);
 								      marker.bindPopup(jsonDoc.restaurantes[i].properties.popupContent);
+
+											var cadena = jsonDoc.restaurantes[i].geometry.coordinates[0]+"_"+jsonDoc.restaurantes[i].geometry.coordinates[1];
+											cadena=cadena.replace(/\-|\.|\_/gi,"");
+											vDocnum[cadena]=jsonDoc.restaurantes[i].docnum;
+											marker.on('click', function(e) {
+												$( "#mypanel" ).panel( "open" , {} );
+
+												var cadena = e.latlng.lat+"_"+e.latlng.lng;
+												cadena=cadena.replace(/\-|\.|\_/gi,"");
+												setPanelNoFoodCourt(cadena);
+
+											});//marker.on click
 										}
 
 	              },
@@ -104,6 +156,19 @@ $(function() {
 											var marker = L.marker([jsonDoc.restaurantes[i].geometry.coordinates[0],
 								        jsonDoc.restaurantes[i].geometry.coordinates[1]], { icon: yellowIcon }).addTo(carneAsada);
 								      marker.bindPopup(jsonDoc.restaurantes[i].properties.popupContent);
+
+											var cadena = jsonDoc.restaurantes[i].geometry.coordinates[0]+"_"+jsonDoc.restaurantes[i].geometry.coordinates[1];
+											cadena=cadena.replace(/\-|\.|\_/gi,"");
+											vDocnum[cadena]=jsonDoc.restaurantes[i].docnum;
+
+											marker.on('click', function(e) {
+												$( "#mypanel" ).panel( "open" , {} );
+
+												var cadena = e.latlng.lat+"_"+e.latlng.lng;
+												cadena=cadena.replace(/\-|\.|\_/gi,"");
+												setPanelNoFoodCourt(cadena);
+
+											});//marker.on click
 										}
 
 	              },
@@ -127,6 +192,19 @@ $(function() {
 											var marker = L.marker([jsonDoc.restaurantes[i].geometry.coordinates[0],
 								        jsonDoc.restaurantes[i].geometry.coordinates[1]], { icon: yellowIcon }).addTo(carneAsada);
 								      marker.bindPopup(jsonDoc.restaurantes[i].properties.popupContent);
+
+											var cadena = jsonDoc.restaurantes[i].geometry.coordinates[0]+"_"+jsonDoc.restaurantes[i].geometry.coordinates[1];
+											cadena=cadena.replace(/\-|\.|\_/gi,"");
+											vDocnum[cadena]=jsonDoc.restaurantes[i].docnum;
+
+											marker.on('click', function(e) {
+												$( "#mypanel" ).panel( "open" , {} );
+
+												var cadena = e.latlng.lat+"_"+e.latlng.lng;
+												cadena=cadena.replace(/\-|\.|\_/gi,"");
+												setPanelNoFoodCourt(cadena);
+
+											});//marker.on click
 										}
 
 	              },

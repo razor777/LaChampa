@@ -75,6 +75,27 @@ var geojsonDoc = {
     }
 };
 db.restaurantes.insert(geojsonDoc);
+
+var geojsonDoc = {
+    "docnum":23,
+    "type": "Feature",
+    "properties": {
+        "nombre": "Marisco y Mariscos",
+        "amenity": "local",
+        "lugarAsociado":0,
+        "popupContent": "Deliciosa sopa de cangrejo",
+	      "tipoComida":["mariscos"],
+        "rating":"",
+        "menu":[{"nombreComida":"Sopa marinera","precio":"32 lps."},
+                {"nombreComida":"Cangrejo bailarin","precio":"33 lps."}]
+    },
+    "geometry": {
+        "type": "Point",
+        "coordinates": [14.120121, -87.220234]
+    }
+};
+db.restaurantes.insert(geojsonDoc);
+
 var query = {$and:[{"properties.lugarAsociado":{$eq:15}},{"properties.tipoComida":{$eq:"Tacos"}}]};
 var proy = {"_id":0,"properties":1,"geometry":1};
 db.restaurantes.find(query,proy).pretty();

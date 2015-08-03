@@ -24,7 +24,7 @@ function mapa(db){
 
     mapaRouter.get("/CatCarneAsada",function(req,res){
       var query = {$and:[{"properties.amenity":{$eq:"local"}},{"properties.tipoComida":{$eq:"carneAsada"}}]};
-      var proy = {"_id":0,"properties":1,"geometry":1};
+      var proy = {"_id":0,"properties":1,"geometry":1,"docnum":1};
       restaurantes.find(query,proy).toArray(function(err, vRestaurantes){
           if(err){
               res.status(500).json({"error":err});
@@ -36,7 +36,7 @@ function mapa(db){
 
     mapaRouter.get("/CatMariscos",function(req,res){
       var query = {$and:[{"properties.amenity":{$eq:"local"}},{"properties.tipoComida":{$eq:"mariscos"}}]};
-      var proy = {"_id":0,"properties":1,"geometry":1};
+      var proy = {"_id":0,"properties":1,"geometry":1,"docnum":1};
       restaurantes.find(query,proy).toArray(function(err, vRestaurantes){
           if(err){
               res.status(500).json({"error":err});
@@ -48,7 +48,7 @@ function mapa(db){
 
     mapaRouter.get("/CatBaleadas",function(req,res){
       var query = {$and:[{"properties.amenity":{$eq:"local"}},{"properties.tipoComida":{$eq:"baleadas"}}]};
-      var proy = {"_id":0,"properties":1,"geometry":1};
+      var proy = {"_id":0,"properties":1,"geometry":1,"docnum":1};
       restaurantes.find(query,proy).toArray(function(err, vRestaurantes){
           if(err){
               res.status(500).json({"error":err});
@@ -60,7 +60,7 @@ function mapa(db){
 
     mapaRouter.get("/CatFoodCourt",function(req,res){
       var query = {"properties.amenity":{$eq:"centroFoodcourt"}};
-      var proy = {"_id":0,"properties":1,"geometry":1};
+      var proy = {"_id":0,"properties":1,"geometry":1,"docnum":1};
       restaurantes.find(query,proy).toArray(function(err, vRestaurantes){
           if(err){
               res.status(500).json({"error":err});
